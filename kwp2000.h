@@ -13,6 +13,7 @@ Recommended Practice
 #include "sid.h"
 #include "interfaces/usart/usart_stm32f103.h"
 #include "peripherals/program_timer/program_timer.h"
+#include "peripherals/dma/dma_stm32f10x.h"
 
 
 class Header
@@ -50,7 +51,7 @@ class KWP2000
     Tester = 0xF1,
   };
   public:
-  KWP2000(Usart& aref_usart);
+  KWP2000(Usart& mref_usart, STM32_DMA* ap_dma_controller = nullptr);
   ~KWP2000();
   
   void Execute();
@@ -88,12 +89,15 @@ class KWP2000
   static constexpr auto p4min{0};
   static constexpr auto p4max{20};
   
+  STM32_DMA*    mp_rx_dma_controller;
+  STM32_DMA*    mp_tx_dma_controller;
   
   Program_timer m_p1_timer;
   Program_timer m_p2_timer;
   Program_timer m_p3_timer;
   Program_timer m_p4_timer;
   Program_timer m_kwp2000_timer;
+  
   Status m_status;
 };
 

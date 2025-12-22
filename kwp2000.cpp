@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "kwp2000.h"
 #include "pid.h"
 
@@ -8,8 +10,8 @@ Header::Header(const uint8_t a_format, const uint8_t a_target, const uint8_t a_s
   , m_length{a_length}
 {}
   
-KWP2000::KWP2000(Usart& aref_usart)
-  : mref_usart{aref_usart}
+KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
+  : mref_usart{mref_usart}
   , m_tx_data{}
   , m_rx_data{}
   , m_kwp2000_timer{Program_timer::TimerType_one_pulse, 400}
@@ -18,7 +20,165 @@ KWP2000::KWP2000(Usart& aref_usart)
   , m_p3_timer{Program_timer::TimerType_one_pulse}
   , m_p4_timer{Program_timer::TimerType_one_pulse}
   , m_status{Status::Uninitialized}
+  , mp_rx_dma_controller{ap_rx_dma_controller}
+  , mp_tx_dma_controller{nullptr}
 {
+  printf("Initializing KWP2000.");
+  
+  //init usart via ptr
+  
+  if(mp_rx_dma_controller != nullptr && mp_tx_dma_controller != nullptr)
+  {
+    printf("Initializing DMA channel");
+    switch(reinterpret_cast<uint32_t>(&mref_usart))
+    {
+      case USART1_BASE:
+      {
+        USART1->CR1 |= USART_CR1_TE;
+        USART1->CR1 |= USART_CR1_RE;
+        USART1->CR3 |= USART_CR3_DMAT;
+        USART1->CR3 |= USART_CR3_DMAR;
+        USART1->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
+        
+        //RX
+        mp_rx_dma_controller->SetChannel(DMA1_Channel5);
+        mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART1->DR));
+        mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_rx_dma_controller->DisablePeripheralIncrement();
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_rx_dma_controller->EnableMemoryIncrement();
+        mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
+        mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
+        mp_rx_dma_controller->SetTransferSize(7);
+//        mp_rx_dma_controller->EnableChannel();
+
+        //TX
+        mp_tx_dma_controller->SetChannel(DMA1_Channel4);
+        mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART1->DR));
+        mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_tx_dma_controller->DisablePeripheralIncrement();
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_tx_dma_controller->EnableMemoryIncrement();
+        mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
+        mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
+        mp_tx_dma_controller->SetTransferSize(10);
+      }
+      break;
+      
+      case USART2_BASE:
+      {
+        USART2->CR1 |= USART_CR1_TE;
+        USART2->CR1 |= USART_CR1_RE;
+        USART2->CR3 |= USART_CR3_DMAT;
+        USART2->CR3 |= USART_CR3_DMAR;
+        USART2->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
+        
+        //RX
+        mp_rx_dma_controller->SetChannel(DMA1_Channel6);
+        mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART2->DR));
+        mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_rx_dma_controller->DisablePeripheralIncrement();
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_rx_dma_controller->EnableMemoryIncrement();
+        mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
+        mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
+        mp_rx_dma_controller->SetTransferSize(7);
+//        mp_rx_dma_controller->EnableChannel();
+
+        //TX
+        mp_tx_dma_controller->SetChannel(DMA1_Channel7);
+        mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART2->DR));
+        mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_tx_dma_controller->DisablePeripheralIncrement();
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_tx_dma_controller->EnableMemoryIncrement();
+        mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
+        mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
+        mp_tx_dma_controller->SetTransferSize(10);
+      }
+      break;
+      
+      case USART3_BASE:
+      {
+        USART3->CR1 |= USART_CR1_TE;
+        USART3->CR1 |= USART_CR1_RE;
+        USART3->CR3 |= USART_CR3_DMAT;
+        USART3->CR3 |= USART_CR3_DMAR;
+        USART3->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
+        
+        //RX
+        mp_rx_dma_controller->SetChannel(DMA1_Channel3);
+        mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART3->DR));
+        mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_rx_dma_controller->DisablePeripheralIncrement();
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_rx_dma_controller->EnableMemoryIncrement();
+        mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
+        mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
+        mp_rx_dma_controller->SetTransferSize(7);
+//        mp_rx_dma_controller->EnableChannel();
+
+        //TX
+        mp_tx_dma_controller->SetChannel(DMA1_Channel2);
+        mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART3->DR));
+        mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_tx_dma_controller->DisablePeripheralIncrement();
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_tx_dma_controller->EnableMemoryIncrement();
+        mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
+        mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
+        mp_tx_dma_controller->SetTransferSize(10);
+      }
+      break;
+
+      case UART4_BASE:
+      {
+        UART4->CR1 |= USART_CR1_TE;
+        UART4->CR1 |= USART_CR1_RE;
+        UART4->CR3 |= USART_CR3_DMAT;
+        UART4->CR3 |= USART_CR3_DMAR;
+        UART4->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
+        
+        //RX
+        mp_rx_dma_controller->SetChannel(DMA2_Channel3);
+        mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&UART4->DR));
+        mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_rx_dma_controller->DisablePeripheralIncrement();
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_rx_dma_controller->EnableMemoryIncrement();
+        mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
+        mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
+        mp_rx_dma_controller->SetTransferSize(7);
+//        mp_rx_dma_controller->EnableChannel();
+
+        //TX
+        mp_tx_dma_controller->SetChannel(DMA2_Channel5);
+        mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&UART4->DR));
+        mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
+        mp_tx_dma_controller->DisablePeripheralIncrement();
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
+        mp_tx_dma_controller->EnableMemoryIncrement();
+        mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
+        mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
+        mp_tx_dma_controller->SetTransferSize(10);
+      }
+      break;
+      
+      default:
+      {
+        printf("KWP2000: wrong UART pointer");
+      }
+      break;
+    }
+  }
 }
   
 void KWP2000::Execute()
@@ -63,6 +223,9 @@ bool KWP2000::PerformFastInitialization()
   m_tx_data[2] = static_cast<uint8_t>(FunctionalAddress::Tester);        //src
   m_tx_data[3] = static_cast<uint8_t>(SID::SID_startCommunication);      //SID
   m_tx_data[4] = static_cast<uint8_t>(CalculateCrc());                   //crc
+  
+  mp_tx_dma_controller->SetTransferSize(m_tx_data.size());
+  mp_tx_dma_controller->EnableChannel();
   
   mref_usart.Transmit(m_tx_data.data(), m_tx_data.size());
   
