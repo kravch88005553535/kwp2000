@@ -9,9 +9,9 @@
 
 int main (void)
 {
-  uint8_t array[10]{150, 46, 66, 189, 57, 255, 131, 204, 49, 92};
-  
-  uint8_t array2[10]{};
+//  uint8_t array[10]{150, 46, 66, 189, 57, 255, 131, 204, 49, 92};
+//  
+//  uint8_t array2[10]{};
   
   Rcc rcc(Rcc::System_clock_source_pll_clock, Rcc::Hse_frequency_8Mhz);
 
@@ -20,30 +20,10 @@ int main (void)
   Pin led_pin(GPIOC, 13, Pin::mode_out_pullup);
     
   KWP2000* mp_kwp2000 = new KWP2000(*(new Usart(USART1, Usart::Interface_UART, Usart::WordLength_8bits, Usart::StopBits_1,
-                       Usart::ParityControl_disabled, Usart::Baudrate_10400KBaud, rcc.GetPeripheralClock(USART1))));
-
-
-  
-//  NVIC_EnableIRQ(DMA1_Channel5_IRQn);
-//  NVIC_EnableIRQ(USART1_IRQn);
-
-  Program_timer pt(Program_timer::TimerType_one_pulse, 500);
-  
-  STM32_DMA dma_controller{};
-  
+                       Usart::ParityControl_disabled, Usart::Baudrate_10400KBaud, rcc.GetPeripheralClock(USART1))), true);
 
   while(1)
   {
-    static bool a = {1};
-    if(a)
-    {
-      led_pin.Toggle();
-      dma_controller.EnableChannel(DMA1_Channel4);
-    }
-    
-    if(pt.Check())
-    {
-      __ASM("nop");
-    }
+    mp_kwp2000->Execute();
   }
 }

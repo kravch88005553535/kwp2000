@@ -10,8 +10,8 @@ Header::Header(const uint8_t a_format, const uint8_t a_target, const uint8_t a_s
   , m_length{a_length}
 {}
   
-KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
-  : mref_usart{mref_usart}
+KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
+  : mref_usart{aref_usart}
   , m_tx_data{}
   , m_rx_data{}
   , m_kwp2000_timer{Program_timer::TimerType_one_pulse, 400}
@@ -20,17 +20,16 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
   , m_p3_timer{Program_timer::TimerType_one_pulse}
   , m_p4_timer{Program_timer::TimerType_one_pulse}
   , m_status{Status::Uninitialized}
-  , mp_rx_dma_controller{ap_rx_dma_controller}
-  , mp_tx_dma_controller{nullptr}
+  , mp_rx_dma_controller{new STM32_DMA()}
+  , mp_tx_dma_controller{new STM32_DMA()}
 {
-  printf("Initializing KWP2000.");
-  
-  //init usart via ptr
-  
-  if(mp_rx_dma_controller != nullptr && mp_tx_dma_controller != nullptr)
+  printf("Initializing KWP2000.\r\n");
+
+  if(a_dma_usage)
   {
-    printf("Initializing DMA channel");
-    switch(reinterpret_cast<uint32_t>(&mref_usart))
+    printf("Initializing DMA TX/RX channels.\r\n");
+
+    switch(mref_usart.GetPeripheralAddress())
     {
       case USART1_BASE:
       {
@@ -40,7 +39,6 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         USART1->CR3 |= USART_CR3_DMAR;
         USART1->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
         
-        //RX
         mp_rx_dma_controller->SetChannel(DMA1_Channel5);
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART1->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -51,9 +49,7 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
         mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
         mp_rx_dma_controller->SetTransferSize(7);
-//        mp_rx_dma_controller->EnableChannel();
 
-        //TX
         mp_tx_dma_controller->SetChannel(DMA1_Channel4);
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART1->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -64,6 +60,7 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
         mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
         mp_tx_dma_controller->SetTransferSize(10);
+        m_status = Status::PeripheralInitialized;
       }
       break;
       
@@ -75,7 +72,6 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         USART2->CR3 |= USART_CR3_DMAR;
         USART2->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
         
-        //RX
         mp_rx_dma_controller->SetChannel(DMA1_Channel6);
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART2->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -86,9 +82,7 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
         mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
         mp_rx_dma_controller->SetTransferSize(7);
-//        mp_rx_dma_controller->EnableChannel();
 
-        //TX
         mp_tx_dma_controller->SetChannel(DMA1_Channel7);
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART2->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -99,6 +93,7 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
         mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
         mp_tx_dma_controller->SetTransferSize(10);
+        m_status = Status::PeripheralInitialized;
       }
       break;
       
@@ -110,7 +105,6 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         USART3->CR3 |= USART_CR3_DMAR;
         USART3->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
         
-        //RX
         mp_rx_dma_controller->SetChannel(DMA1_Channel3);
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART3->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -121,9 +115,7 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
         mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
         mp_rx_dma_controller->SetTransferSize(7);
-//        mp_rx_dma_controller->EnableChannel();
 
-        //TX
         mp_tx_dma_controller->SetChannel(DMA1_Channel2);
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART3->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -134,6 +126,7 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
         mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
         mp_tx_dma_controller->SetTransferSize(10);
+        m_status = Status::PeripheralInitialized;
       }
       break;
 
@@ -145,7 +138,6 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         UART4->CR3 |= USART_CR3_DMAR;
         UART4->SR &= ~USART_SR_TC; //проверить нужно ли сбрасывать этот флаг
         
-        //RX
         mp_rx_dma_controller->SetChannel(DMA2_Channel3);
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&UART4->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -156,9 +148,7 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
         mp_rx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_veryhigh);
         mp_rx_dma_controller->SetTransferSize(7);
-//        mp_rx_dma_controller->EnableChannel();
 
-        //TX
         mp_tx_dma_controller->SetChannel(DMA2_Channel5);
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&UART4->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
@@ -169,31 +159,49 @@ KWP2000::KWP2000(Usart& mref_usart, STM32_DMA* ap_rx_dma_controller)
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
         mp_tx_dma_controller->SetChannelPriority(STM32_DMA::ChannelPriority_high);
         mp_tx_dma_controller->SetTransferSize(10);
+        m_status = Status::PeripheralInitialized;
+      }
+      break;
+      
+      case UART5_BASE:
+      {
+        printf("KWP2000: wrong UART pointer. DMA initialization failed\r\n");
+        printf("Switching to manual TX/RX management\r\n");
+        m_status = Status::DmaInitializationFailed;
       }
       break;
       
       default:
       {
-        printf("KWP2000: wrong UART pointer");
+        printf("KWP2000: wrong UART pointer. KWP2000 initialization failed\r\n");
+        m_status = Status::PeripheralInitializationFailed;
       }
       break;
     }
+  }
+  
+  if(m_status == Status::DmaInitializationFailed or !a_dma_usage)
+  {
+    m_status = Status::PeripheralInitializationFailed;
   }
 }
   
 void KWP2000::Execute()
 {
-  //check if diag session is lost
-  //if lost -> retry
-  bool init_success{false};
-  if(m_kwp2000_timer.Check())
+  if(m_status == Status::PeripheralInitializationFailed)
   {
-    init_success = PerformFastInitialization();
+    return;
   }
-  
-  if(init_success)
+
+  if(m_status == Status::PeripheralInitialized)
   {
-    m_status = Status::Initialized;
+    if(m_kwp2000_timer.Check())
+    {
+      if(PerformFastInitialization())
+      {
+        m_status = Status::Initialized;
+      }
+    }
   }
 }
 

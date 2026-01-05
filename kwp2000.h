@@ -31,27 +31,30 @@ class Header
 enum class Status : uint8_t
 {
   Uninitialized,
+  DmaInitializationFailed,
+  PeripheralInitializationFailed,
+  PeripheralInitialized,
   Initialized,
-  WaitForResponse,
-  
+  WaitForResponse
 };
 class KWP2000
 {
-  enum class HeaderFromat: uint8_t
+  enum HeaderFromat: uint8_t
   {
     NoAddressInformationIsPresent = 0x00,
     ExceptionModeOfAddressing     = 0x40,
     PhysicalAddressing            = 0x80,
     FunctionalAddressing          = 0xC0,
   };
-  enum class FunctionalAddress
+  enum FunctionalAddress
   {
     Immo   = 0xC0,
     Ecu    = 0x10,
     Tester = 0xF1,
   };
   public:
-  KWP2000(Usart& mref_usart, STM32_DMA* ap_dma_controller = nullptr);
+    
+  KWP2000(Usart& aref_usart, const bool a_dma_usage);
   ~KWP2000();
   
   void Execute();
@@ -66,13 +69,8 @@ class KWP2000
   void ReadEcuIdentification();
   uint8_t CalculateCrc();
   
-  /*
-  rx tx buffers (as I remember 255 bytes each);
-  */
-  
   void MakeRequest(const Header a_header, const SID a_sid /*, parameter_bytes*/);
   Usart& mref_usart;
-  
   
   //m_communication_speed
   std::array<uint8_t, 255> m_tx_data;
@@ -100,19 +98,5 @@ class KWP2000
   
   Status m_status;
 };
-
-//class KWP2000OnKLine : public KWP2000
-//{
-//  ~KWP2000OnKLine();
-//  
-
-//  void Perform5BaudInitialization();
-//  
-//};
-
-//class KWP2000OnCAN : public KWP2000
-//{
-//  ~KWP2000OnCAN();
-//};
 
 #endif //__KWP_2000_H__
