@@ -14,19 +14,19 @@ Recommended Practice
 #include "interfaces/usart/usart_stm32f103.h"
 #include "peripherals/program_timer/program_timer.h"
 #include "peripherals/dma/dma_stm32f10x.h"
+#include "peripherals/gpio/gpio_stm32f103.h"
 
-
-class Header
-{
-  public:
-  Header(const uint8_t a_format, const uint8_t a_target, const uint8_t source, const uint8_t a_length);
-  Header() = delete;
-  ~Header();
-  uint8_t m_format;
-  uint8_t m_target;
-  uint8_t m_source;
-  uint8_t m_length;
-};
+//class Header
+//{
+//public:
+//  Header(const uint8_t a_format, const uint8_t a_target, const uint8_t source, const uint8_t a_length);
+//  Header() = delete;
+//  ~Header();
+//  uint8_t m_format;
+//  uint8_t m_target;
+//  uint8_t m_source;
+//  uint8_t m_length;
+//};
 
 enum class Status : uint8_t
 {
@@ -34,6 +34,9 @@ enum class Status : uint8_t
   DmaInitializationFailed,
   PeripheralInitializationFailed,
   PeripheralInitialized,
+  OnBus25msLowCondition,
+  OnBus25msHighCondition,
+  TransmissionInitData,
   Initialized,
   WaitForResponse
 };
@@ -43,8 +46,8 @@ class KWP2000
   {
     NoAddressInformationIsPresent = 0x00,
     ExceptionModeOfAddressing     = 0x40,
-    PhysicalAddressing            = 0x80,
-    FunctionalAddressing          = 0xC0,
+    PhysicalAddressing            = 0x81,
+    FunctionalAddressing          = 0xC1,
   };
   enum FunctionalAddress
   {
@@ -69,12 +72,12 @@ class KWP2000
   void ReadEcuIdentification();
   uint8_t CalculateCrc();
   
-  void MakeRequest(const Header a_header, const SID a_sid /*, parameter_bytes*/);
+//  void MakeRequest(const Header a_header, const SID a_sid /*, parameter_bytes*/);
   Usart& mref_usart;
   
-  //m_communication_speed
   std::array<uint8_t, 255> m_tx_data;
   std::array<uint8_t, 255> m_rx_data;
+  uint8_t m_package_size;
   static constexpr auto p1min{0};
   static constexpr auto p1max{20};
   
@@ -89,6 +92,9 @@ class KWP2000
   
   STM32_DMA*    mp_rx_dma_controller;
   STM32_DMA*    mp_tx_dma_controller;
+  
+  Pin*          mp_tx_pin; 
+  Pin*          mp_rx_pin;
   
   Program_timer m_p1_timer;
   Program_timer m_p2_timer;
