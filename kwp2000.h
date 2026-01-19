@@ -28,20 +28,38 @@ Recommended Practice
 //  uint8_t m_length;
 //};
 
-enum class Status : uint8_t
-{
-  Uninitialized,
-  DmaInitializationFailed,
-  PeripheralInitializationFailed,
-  PeripheralInitialized,
-  OnBus25msLowCondition,
-  OnBus25msHighCondition,
-  TransmissionInitData,
-  Initialized,
-  WaitForResponse
-};
 class KWP2000
 {
+  enum Status : uint8_t
+  {
+    Uninitialized,
+    DmaInitializationFailed,
+    PeripheralInitializationFailed,
+    PeripheralInitialized,
+    InitProcessFailed,
+    FullyInitialized,
+    Kwp2000Idle,
+    ConnectionLost,
+  };
+  
+  enum InitStep
+  {
+    InitBegin,
+    OnBus25msLowCondition,
+    OnBus25msHighCondition,
+    TransmissionInitData,
+    WaitForInitEnd,
+    InitEnd,
+    InitFinished,
+  };
+  
+  enum UsartState
+  {
+    TransmittingData,
+    WaitingForResponse, 
+    Idle,
+  };
+
   enum HeaderFromat: uint8_t
   {
     NoAddressInformationIsPresent = 0x00,
@@ -63,20 +81,23 @@ class KWP2000
   void Execute();
   
   private:
-  bool PerformFastInitialization();
-  void StartDiagnosicSession();
-  void StopDiagnosticSession();
-  void SecurityAccess();
-  void TesterPresent();
-  void EcuReset();
-  void ReadEcuIdentification();
-  uint8_t CalculateCrc();
+  bool PerformInitialization();
+  void SetPackageSize(const uint8_t a_size);
+  uint8_t GetPackageSize() const;
+  uint8_t CalculateCrc(const uint8_t a_last_element_index) const; 
   
-//  void MakeRequest(const Header a_header, const SID a_sid /*, parameter_bytes*/);
-  Usart& mref_usart;
+  void MakeRequest();
+  void WaitForResponse();
+  void ParseResponse();
   
-  std::array<uint8_t, 255> m_tx_data;
-  std::array<uint8_t, 255> m_rx_data;
+//  void StartDiagnosicSession();
+//  void StopDiagnosticSession();
+//  void SecurityAccess();
+//  void TesterPresent();
+//  void EcuReset();
+//  void ReadEcuIdentification();
+  
+  std::array<uint8_t, 255> m_txrx_data;
   uint8_t m_package_size;
   static constexpr auto p1min{0};
   static constexpr auto p1max{20};
@@ -90,6 +111,10 @@ class KWP2000
   static constexpr auto p4min{0};
   static constexpr auto p4max{20};
   
+  static constexpr uint8_t stc_keybyte1{0x6B};
+  static constexpr uint8_t stc_keybyte2{0x8F};
+  
+  Usart& mref_usart;
   STM32_DMA*    mp_rx_dma_controller;
   STM32_DMA*    mp_tx_dma_controller;
   

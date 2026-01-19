@@ -12,8 +12,7 @@
   
 KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
   : mref_usart{aref_usart}
-  , m_tx_data{}
-  , m_rx_data{}
+  , m_txrx_data{}
   , m_package_size{0}
   , m_kwp2000_timer{Program_timer::TimerType_one_pulse, 400}
   , m_p1_timer{Program_timer::TimerType_one_pulse}
@@ -29,10 +28,8 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
 {
   printf("Initializing KWP2000.\r\n");
 
-  printf("Array addres :0x%X\r\n", &m_tx_data[0]);
-  printf("Array addres :0x%X\r\n", &m_rx_data[0]);
-  std::fill(std::begin(m_tx_data), std::end(m_tx_data), 0xAA);
-  std::fill(std::begin(m_rx_data), std::end(m_rx_data), 0xBB);
+  printf("Array addres :0x%X\r\n", &m_txrx_data[0]);
+  std::fill(std::begin(m_txrx_data), std::end(m_txrx_data), 0xAA);
   
   if(a_dma_usage)
   {
@@ -55,7 +52,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART1->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_rx_dma_controller->DisablePeripheralIncrement();
-        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_rx_dma_controller->EnableMemoryIncrement();
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
@@ -66,7 +63,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART1->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_tx_dma_controller->DisablePeripheralIncrement();
-        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_tx_dma_controller->EnableMemoryIncrement();
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
@@ -88,7 +85,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART2->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_rx_dma_controller->DisablePeripheralIncrement();
-        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_rx_dma_controller->EnableMemoryIncrement();
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
@@ -99,7 +96,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART2->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_tx_dma_controller->DisablePeripheralIncrement();
-        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_tx_dma_controller->EnableMemoryIncrement();
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
@@ -121,7 +118,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART3->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_rx_dma_controller->DisablePeripheralIncrement();
-        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_rx_dma_controller->EnableMemoryIncrement();
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
@@ -132,7 +129,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&USART3->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_tx_dma_controller->DisablePeripheralIncrement();
-        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_tx_dma_controller->EnableMemoryIncrement();
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
@@ -154,7 +151,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_rx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&UART4->DR));
         mp_rx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_rx_dma_controller->DisablePeripheralIncrement();
-        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_rx_data[0]));
+        mp_rx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_rx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_rx_dma_controller->EnableMemoryIncrement();
         mp_rx_dma_controller->SetMode(STM32_DMA::Mode_Peripheral2Memory);
@@ -165,7 +162,7 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
         mp_tx_dma_controller->SetPeripheralAddress(reinterpret_cast<uint32_t>(&UART4->DR));
         mp_tx_dma_controller->SetPeripheralSize(STM32_DMA::PeripheralSize_8bit);
         mp_tx_dma_controller->DisablePeripheralIncrement();
-        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_tx_data[0]));
+        mp_tx_dma_controller->SetMemoryAddress(reinterpret_cast<uint32_t>(&m_txrx_data[0]));
         mp_tx_dma_controller->SetMemorySize(STM32_DMA::MemorySize_8bit);
         mp_tx_dma_controller->EnableMemoryIncrement();
         mp_tx_dma_controller->SetMode(STM32_DMA::Mode_Memory2Peripheral);
@@ -200,115 +197,205 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
   
 void KWP2000::Execute()
 {
-  if(m_status == Status::PeripheralInitializationFailed)
+  switch(m_status)
   {
-    return;
-  }
-  else if(m_status != Status::Initialized)
-  {
-    if(PerformFastInitialization())
+    case PeripheralInitialized:
+    case DmaInitializationFailed:
     {
-      m_status = Status::Initialized;
+      PerformInitialization();
     }
-  }
-
-  if(m_status == Status::Initialized)
-  {
+    break;
     
+    case FullyInitialized:
+    {
+      //check session timers and execute logic.
+    }
+    break;
+    
+    case Kwp2000Idle:
+    case PeripheralInitializationFailed:
+    case Uninitialized:
+    default:
+      __ASM("nop");
+    break;
   }
 }
 
-bool KWP2000::PerformFastInitialization()
+bool KWP2000::PerformInitialization()
 {
-  if(m_status == Status::PeripheralInitialized)
+  static InitStep init_step{InitBegin};
+  switch(init_step)
   {
-    if(!m_kwp2000_timer.Check())
+    case InitBegin:
     {
-      return 0;
-    }
-    mp_tx_pin->SetMode(Pin::mode_out_pulldown);
-    m_kwp2000_timer.SetInterval_ms(24);
-    m_kwp2000_timer.Start();
-    m_status = Status::OnBus25msLowCondition;
-    return 0;
-  }
-  
-  if(m_status == Status::OnBus25msLowCondition)
-  {
-    if(m_kwp2000_timer.Check())
-    {
-      m_kwp2000_timer.Start();
-      mp_tx_pin->SetMode(Pin::mode_out_pullup);
-      m_status = Status::OnBus25msHighCondition;
-      m_tx_data[0] = static_cast<uint8_t>(HeaderFromat::PhysicalAddressing); //fmt
-      m_tx_data[1] = static_cast<uint8_t>(FunctionalAddress::Ecu);           //tgt
-      m_tx_data[2] = static_cast<uint8_t>(FunctionalAddress::Tester);        //src
-      m_tx_data[3] = static_cast<uint8_t>(SID::SID_startCommunication);      //SID
-      m_tx_data[4] = static_cast<uint8_t>(0x03);                   //crc
-      return 0;
-    }
-  }
-  
-  if(m_status == Status::OnBus25msHighCondition)
-  {
-    if(m_kwp2000_timer.Check())
-    {
-      mp_tx_pin->SetMode(Pin::mode_alternate_function_pushpull);
-      mp_tx_dma_controller->SetTransferSize(5);
-      mp_tx_dma_controller->EnableChannel();
-      m_status = Status::TransmissionInitData;
-    }
-    return 0;
-  }
-  
-  if(m_status == Status::TransmissionInitData)
-  {
-    if(mp_tx_dma_controller->IsTransferComplete())
-    {
-      m_p4_timer.SetInterval_ms(p2min);
-      m_p4_timer.Start();
-      while(!m_p4_timer.Check())
+      if(m_kwp2000_timer.Check())
       {
-        __ASM("nop");
+        mp_tx_pin->SetMode(Pin::mode_out_pulldown);
+        m_kwp2000_timer.SetInterval_ms(24);
+        m_kwp2000_timer.Start();
+        init_step = OnBus25msLowCondition;
       }
-      
-      USART1->CR1 |= USART_CR1_RE;
-      USART1->CR3 |= USART_CR3_DMAR;
-      mp_rx_dma_controller->SetTransferSize(15);
-      mp_rx_dma_controller->EnableChannel();
-      
-      m_p4_timer.SetInterval_ms(550);
-      m_p4_timer.Start();
-
-      while(!m_p4_timer.Check())
-      {
-        __ASM("nop");
-      }
-      m_status = Status::WaitForResponse;
     }
-    return 0;
-  }
+    break;
+        
+    case OnBus25msLowCondition:
+    {
+      if(m_kwp2000_timer.Check())
+      {
+        m_kwp2000_timer.Start();
+        mp_tx_pin->SetMode(Pin::mode_out_pullup);
+        m_txrx_data[0] = static_cast<uint8_t>(HeaderFromat::PhysicalAddressing); //fmt
+        m_txrx_data[1] = static_cast<uint8_t>(FunctionalAddress::Ecu);           //tgt
+        m_txrx_data[2] = static_cast<uint8_t>(FunctionalAddress::Tester);        //src
+        m_txrx_data[3] = static_cast<uint8_t>(SID::SID_startCommunication);      //SID
+        m_txrx_data[4] = static_cast<uint8_t>(0x03);                   //crc
+        init_step = OnBus25msHighCondition;
+      }
+    }
+    break;
+        
+    case OnBus25msHighCondition:
+    {
+      if(m_kwp2000_timer.Check())
+      {
+        mp_tx_pin->SetMode(Pin::mode_alternate_function_pushpull);
+        MakeRequest();
+        init_step = TransmissionInitData;
+      }
+    }
+    break;
+    
+    case TransmissionInitData:
+    {
+      if(mp_tx_dma_controller->IsTransferComplete())
+      {
+        m_p4_timer.SetInterval_ms(p2min);
+        m_p4_timer.Start();
+        init_step = WaitForInitEnd;
+      }
+    }
+    break;
+    
+    case WaitForInitEnd:
+    {
+      if(m_p4_timer.Check())
+      {
+        std::fill(std::begin(m_txrx_data), std::end(m_txrx_data), 0);
+        mref_usart.EnableReciever();
+        mref_usart.EnableDmaReciever();
+        mp_rx_dma_controller->SetTransferSize(255);
+        mp_rx_dma_controller->EnableChannel();
+        m_p4_timer.SetInterval_ms(500);
+        m_p4_timer.Start();
+        init_step = InitEnd;
+      }
+    }
+    break;
+    
+    case InitEnd:
+    {
+      if(m_p4_timer.Check())
+      {
+        if(1 /*check dma rx buffer, calculate CRC*/)
+        {
+          //configure peripherals etc.
+          //start request/respone timers
+          
+          init_step = InitFinished;
+          m_status = FullyInitialized;
+        }
+        else
+        {
+          init_step = InitBegin;
+          m_status = InitProcessFailed;
+          m_kwp2000_timer.SetInterval_ms(3000);  ///!!!!!!!!!!!!!!!!!!!!!
+          m_kwp2000_timer.Start();
+        }
+      }
+    }
+    break;
+    
+    case InitFinished:
+    {
+      return 1;
+    }
+    break;
+        
+    default:
+    break;
+  };
   
-  if(m_status == Status::WaitForResponse)
-  {
-
-    return 0;
-  }
   return 0;
 }
 
-//void KWP2000::MakeRequest(const Header a_header, const SID a_sid /*, parameter_bytes*/)
-//{
-//  constexpr uint8_t ecu_address{0x10};
-//  
-//  
-//  static bool is_t_idle_completed{false};
-//}
+void KWP2000::SetPackageSize(const uint8_t a_size)
+{
+}
 
-uint8_t KWP2000::CalculateCrc()
+uint8_t KWP2000::GetPackageSize() const
+{
+  uint8_t package_size{0};
+  if(m_txrx_data[0] & 0x3F)
+  {
+    package_size = m_txrx_data[0] & 0x3F;
+  }
+  else
+  {
+    package_size = m_txrx_data[3];
+  }
+  return package_size;
+}
+
+void KWP2000::MakeRequest()
+{
+  mp_tx_dma_controller->SetTransferSize(5);
+  mp_tx_dma_controller->EnableChannel();
+}
+
+void KWP2000::WaitForResponse()
+{
+  //check when dmar flag stops changing or check for no RXNE flag on usart register
+}
+
+void KWP2000::ParseResponse()
+{
+  constexpr uint8_t max_package_size{255};
+  constexpr uint8_t no_length_byte_package_size{63};
+  const uint8_t package_size {GetPackageSize()};
+  
+  if(package_size == 0)
+  {
+    printf("RX package size = 0\r\n");
+    return;
+  }
+  printf("RX package size = %X\r\n", package_size);
+  
+  
+  uint8_t last_array_index{0};
+  if(package_size < no_length_byte_package_size)
+  {
+    constexpr uint8_t header_size{3};
+    last_array_index = package_size + header_size;
+  }
+  else
+  {
+    constexpr uint8_t header_size{4};
+    last_array_index = package_size + header_size;
+  }
+  const uint8_t crc {CalculateCrc(last_array_index)};
+  
+  const auto crc_index{last_array_index + 1};
+  if(crc != m_txrx_data[crc_index])
+  {
+    return;
+  }
+  //check sid
+}
+
+uint8_t KWP2000::CalculateCrc(const uint8_t a_last_element_index) const
 {
   uint8_t crc{0};
-  for(auto it{m_tx_data.begin()}; it != m_tx_data.end(); ++it)
+  for(auto it{m_txrx_data.begin()}; it != m_txrx_data.end(); ++it)
   {
     crc += *it;
   }
