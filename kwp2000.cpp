@@ -247,7 +247,7 @@ bool KWP2000::PerformInitialization()
         m_txrx_data[0] = static_cast<uint8_t>(HeaderFromat::PhysicalAddressing); //fmt
         m_txrx_data[1] = static_cast<uint8_t>(FunctionalAddress::Ecu);           //tgt
         m_txrx_data[2] = static_cast<uint8_t>(FunctionalAddress::Tester);        //src
-        m_txrx_data[3] = static_cast<uint8_t>(SID::SID_startCommunication);      //SID
+        m_txrx_data[3] = static_cast<uint8_t>(SID_Req::SID_startCommunication);      //SID
         m_txrx_data[4] = static_cast<uint8_t>(0x03);                   //crc
         init_step = OnBus25msHighCondition;
       }
@@ -296,7 +296,7 @@ bool KWP2000::PerformInitialization()
     {
       if(m_p4_timer.Check())
       {
-        if(1 /*check dma rx buffer, calculate CRC*/)
+        if(ParseResponse())
         {
           //configure peripherals etc.
           //start request/respone timers
@@ -357,7 +357,7 @@ void KWP2000::WaitForResponse()
   //check when dmar flag stops changing or check for no RXNE flag on usart register
 }
 
-void KWP2000::ParseResponse()
+bool KWP2000::ParseResponse()
 {
   constexpr uint8_t max_package_size{255};
   constexpr uint8_t no_length_byte_package_size{63};
@@ -366,38 +366,68 @@ void KWP2000::ParseResponse()
   if(package_size == 0)
   {
     printf("RX package size = 0\r\n");
-    return;
+    return 0;
   }
   printf("RX package size = %X\r\n", package_size);
   
-  
   uint8_t last_array_index{0};
+  uint8_t sid_index{0};
   if(package_size < no_length_byte_package_size)
   {
     constexpr uint8_t header_size{3};
-    last_array_index = package_size + header_size;
+    last_array_index = package_size + header_size - 1;
+    sid_index = 3;
   }
   else
   {
     constexpr uint8_t header_size{4};
-    last_array_index = package_size + header_size;
+    last_array_index = package_size + header_size - 1;
+    sid_index = 4;
   }
-  const uint8_t crc {CalculateCrc(last_array_index)};
+  printf("last array index = %d\r\n", last_array_index);
+  
+  const uint8_t crc{CalculateCrc(last_array_index)};
+  printf("CRC = %X\r\n", crc);
   
   const auto crc_index{last_array_index + 1};
+  
+  printf("CRC index = %d\r\n", crc_index);
   if(crc != m_txrx_data[crc_index])
   {
-    return;
+    return 0;
   }
-  //check sid
+  
+  const SID_Rsp sid = static_cast <SID_Rsp>(m_txrx_data[sid_index]);
+  
+  switch(sid)
+  {
+    case SID_Rsp::SID_Rsp_startCommunication:
+    {
+      return 1;
+    }
+    
+    case SID_Rsp::SID_Rsp_negativeResponse:
+    {
+      return ParseNegativeResponse(/**/);
+    }
+    deafult:
+      return 0;
+    break;
+  }
+  return 0;
 }
 
-uint8_t KWP2000::CalculateCrc(const uint8_t a_last_element_index) const
+bool KWP2000::ParseNegativeResponse()
 {
-  uint8_t crc{0};
-  for(auto it{m_txrx_data.begin()}; it != m_txrx_data.end(); ++it)
+  return 1;
+}
+
+uint8_t KWP2000::CalculateCrc(const uint8_t a_last_index) const
+{
+  uint8_t crc{0}; //can be overflown, it is OK!
+  for(uint8_t i{0}; i <= a_last_index; ++i)
   {
-    crc += *it;
+    crc += m_txrx_data[i];
   }
   return crc;
 }

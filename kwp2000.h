@@ -63,10 +63,11 @@ class KWP2000
   enum HeaderFromat: uint8_t
   {
     NoAddressInformationIsPresent = 0x00,
-    ExceptionModeOfAddressing     = 0x40,
+    ExceptionMode_CARB            = 0x40,
     PhysicalAddressing            = 0x81,
     FunctionalAddressing          = 0xC1,
   };
+  
   enum FunctionalAddress
   {
     Immo   = 0xC0,
@@ -84,11 +85,12 @@ class KWP2000
   bool PerformInitialization();
   void SetPackageSize(const uint8_t a_size);
   uint8_t GetPackageSize() const;
-  uint8_t CalculateCrc(const uint8_t a_last_element_index) const; 
+  uint8_t CalculateCrc(const uint8_t a_last_index) const; 
   
   void MakeRequest();
   void WaitForResponse();
-  void ParseResponse();
+  bool ParseResponse();
+  bool ParseNegativeResponse();
   
 //  void StartDiagnosicSession();
 //  void StopDiagnosticSession();
