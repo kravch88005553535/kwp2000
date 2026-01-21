@@ -8,7 +8,7 @@ Recommended Practice
 */
 
 #include <cstdint>
-#include <array>
+#include <vector>
 
 #include "sid.h"
 #include "interfaces/usart/usart_stm32f103.h"
@@ -64,8 +64,8 @@ class KWP2000
   {
     NoAddressInformationIsPresent = 0x00,
     ExceptionMode_CARB            = 0x40,
-    PhysicalAddressing            = 0x81,
-    FunctionalAddressing          = 0xC1,
+    PhysicalAddressing            = 0x80,
+    FunctionalAddressing          = 0xC0,
   };
   
   enum TimingSet
@@ -92,7 +92,7 @@ class KWP2000
   void SetPackageSize(const uint8_t a_size);
   uint8_t GetPackageSize() const;
   uint8_t CalculateCrc(const uint8_t a_last_index) const; 
-  
+  uint8_t CalculateCrc() const;
   void MakeRequest();
   void WaitForResponse();
   bool ParseResponse();
@@ -126,7 +126,7 @@ class KWP2000
   Pin*          mp_tx_pin; 
   Pin*          mp_rx_pin;
   
-  std::array<uint8_t, 255> m_txrx_data;
+  std::vector<uint8_t> m_txrx_data;
   uint8_t                  m_package_size;
   
   bool m_is_len_info_in_fmt_byte_supported;

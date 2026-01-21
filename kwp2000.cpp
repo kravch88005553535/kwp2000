@@ -31,10 +31,17 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
   , m_timing_set{Unknown}
   
 {
+  constexpr uint8_t crc_size{1};
+  constexpr uint8_t max_data_size{255};
+  constexpr uint8_t max_header_size{4};
+  m_txrx_data.reserve(max_header_size + max_data_size + crc_size);
+  
+  std::fill(std::begin(m_txrx_data), std::end(m_txrx_data), 0xAA);
+  
   printf("Initializing KWP2000.\r\n");
 
   printf("Array addres :0x%X\r\n", &m_txrx_data[0]);
-  std::fill(std::begin(m_txrx_data), std::end(m_txrx_data), 0xAA);
+  
   
   if(a_dma_usage)
   {
@@ -249,14 +256,13 @@ bool KWP2000::PerformInitialization()
       {
         m_kwp2000_timer.Start();
         mp_tx_pin->SetMode(Pin::mode_out_pullup);
-        m_txrx_data[0] = static_cast<uint8_t>(HeaderFromat::PhysicalAddressing); //fmt
-        m_txrx_data[1] = static_cast<uint8_t>(FunctionalAddress::Ecu);           //tgt
-        m_txrx_data[2] = static_cast<uint8_t>(FunctionalAddress::Tester);        //src
-        m_txrx_data[3] = static_cast<uint8_t>(SID_Req::SID_startCommunication);  //SID
-        
-        constexpr uint8_t package_and_header_size{3+1};
-        m_txrx_data[4] = static_cast<uint8_t>(CalculateCrc(package_and_header_size - 1));                   //crc
-        printf("TX CRC = 0x%X\r\n", m_txrx_data[4]);
+        m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing)); //fmt
+        m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));           //tgt
+        m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));        //src
+        m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_startCommunication));  //SID
+        SetPackageSize(1);
+        m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1))); //crc
+        printf("TX CRC = 0x%X\r\n", m_txrx_data[m_txrx_data.size() - 1]);
         init_step = OnBus25msHighCondition;
       }
     }
@@ -311,6 +317,26 @@ bool KWP2000::PerformInitialization()
           m_p3_timer.Start();
           init_step = InitFinished;
           m_status = FullyInitialized;
+//          std::fill(m_txrx_data.begin(), m_txrx_data.end(), 0);
+//          m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());
+//          __ASM("nop");
+//          printf("vec size:%d\r\n",m_txrx_data.size());
+//          m_txrx_data.push_back(static_cast<uint8_t>(0x82)); //fmt HeaderFromat::PhysicalAddressing 2 is for size
+//          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));           //tgt
+//          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));        //src
+//          m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_readDataByLocalIdentifier));  //SID
+//          m_txrx_data.push_back(0x01); //PID
+//          SetPackageSize(2);
+//          m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1))); //crc
+//          printf("vec size:%d\r\n",m_txrx_data.size());
+//          for(volatile uint32_t i{0}; i< 1000000; ++i);
+//          MakeRequest();
+//          while (!mp_tx_dma_controller->IsTransferComplete());
+//          mp_rx_dma_controller->DisableChannel();
+//          mp_rx_dma_controller->SetTransferSize(200);
+//          mp_rx_dma_controller->EnableChannel();
+//          for(volatile uint32_t i{0}; i< 1000000; ++i);
+//          __ASM("nop");
         }
         else
         {
@@ -338,6 +364,15 @@ bool KWP2000::PerformInitialization()
 
 void KWP2000::SetPackageSize(const uint8_t a_size)
 {
+  if(a_size < 63)
+  {
+    m_txrx_data[0] |= a_size;
+  }
+  else
+  {
+    m_txrx_data[0] &= 0x3F;
+    m_txrx_data[3] = a_size; //DANGEROUS SHIT!
+  }
 }
 
 uint8_t KWP2000::GetPackageSize() const
@@ -356,7 +391,7 @@ uint8_t KWP2000::GetPackageSize() const
 
 void KWP2000::MakeRequest()
 {
-  mp_tx_dma_controller->SetTransferSize(5);
+  mp_tx_dma_controller->SetTransferSize(m_txrx_data.size());
   mp_tx_dma_controller->EnableChannel();
 }
 
@@ -469,6 +504,16 @@ bool KWP2000::ParseResponse()
 bool KWP2000::ParseNegativeResponse()
 {
   return 1;
+}
+
+uint8_t KWP2000::CalculateCrc() const
+{
+  uint8_t crc{0}; //can be overflown, it is OK!
+  for(auto it{m_txrx_data.begin()}; it != m_txrx_data.end(); ++it)
+  {
+    crc += *it;
+  }
+  return crc;
 }
 
 uint8_t KWP2000::CalculateCrc(const uint8_t a_last_index) const
