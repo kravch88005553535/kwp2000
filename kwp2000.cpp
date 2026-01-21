@@ -24,6 +24,11 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
   , mp_tx_dma_controller{new STM32_DMA()}
   , mp_tx_pin{nullptr}
   , mp_rx_pin{nullptr}
+  , m_is_len_info_in_fmt_byte_supported{false}
+  , m_is_additional_length_byte_supported{false}
+  , m_is_1_byte_header_supported{false}
+  , m_is_tgt_src_address_in_header_supported{false}
+  , m_timing_set{Unknown}
   
 {
   printf("Initializing KWP2000.\r\n");
@@ -247,8 +252,11 @@ bool KWP2000::PerformInitialization()
         m_txrx_data[0] = static_cast<uint8_t>(HeaderFromat::PhysicalAddressing); //fmt
         m_txrx_data[1] = static_cast<uint8_t>(FunctionalAddress::Ecu);           //tgt
         m_txrx_data[2] = static_cast<uint8_t>(FunctionalAddress::Tester);        //src
-        m_txrx_data[3] = static_cast<uint8_t>(SID_Req::SID_startCommunication);      //SID
-        m_txrx_data[4] = static_cast<uint8_t>(0x03);                   //crc
+        m_txrx_data[3] = static_cast<uint8_t>(SID_Req::SID_startCommunication);  //SID
+        
+        constexpr uint8_t package_and_header_size{3+1};
+        m_txrx_data[4] = static_cast<uint8_t>(CalculateCrc(package_and_header_size - 1));                   //crc
+        printf("TX CRC = 0x%X\r\n", m_txrx_data[4]);
         init_step = OnBus25msHighCondition;
       }
     }
@@ -300,7 +308,7 @@ bool KWP2000::PerformInitialization()
         {
           //configure peripherals etc.
           //start request/respone timers
-          
+          m_p3_timer.Start();
           init_step = InitFinished;
           m_status = FullyInitialized;
         }
@@ -401,8 +409,49 @@ bool KWP2000::ParseResponse()
   
   switch(sid)
   {
+    /*
+      A client (tester) which fulfils Keyword Protocol 2000 according to KWP 2000 - Data Link Layer Recommended
+      Practice shall support 100% functionality, independent from the key bytes transferred from the server (ECU).
+      A server (ECU) transmits is supported functionality concerning timing, length and address with its key bytes. The
+      server’s (ECU’s) which transmit and receive messages are inside of this definition. The header format of a server
+      (ECU) response message must be the same as of the client (tester) request message with the exception of the length
+      information. For example, based on a client (tester) request message with format, target and source header
+      information the server (ECU) must send a response message containing the same header information.
+    */
     case SID_Rsp::SID_Rsp_startCommunication:
     {
+      if(m_txrx_data[5] == 0x8F)
+      {
+        printf("-----------------\r\n");
+        
+        m_is_len_info_in_fmt_byte_supported = m_txrx_data[4] & 0x01;
+        printf("length information in format byte supported = %d\r\n", m_is_len_info_in_fmt_byte_supported);
+        
+        m_is_additional_length_byte_supported = m_txrx_data[4] & 0x02;
+        printf("additional length byte supported = %d\r\n", m_is_additional_length_byte_supported);
+        
+        m_is_1_byte_header_supported = m_txrx_data[4] & 0x04;
+        printf("1 byte header supported = %d\r\n", m_is_1_byte_header_supported);
+        
+        m_is_tgt_src_address_in_header_supported = m_txrx_data[4] & 0x08;
+        printf("target/source address in header supported = %d\r\n", m_is_tgt_src_address_in_header_supported);
+        
+        printf("timing parameter 0 = %d\r\n", (bool)(m_txrx_data[4] & 0x10));
+        printf("timing parameter 1 = %d\r\n", (bool)(m_txrx_data[4] & 0x20));
+        
+        if(((m_txrx_data[4] & 0x10) == 0) and (m_txrx_data[4] & 0x20))
+        {
+          m_timing_set = Normal;
+          printf("Normal timing set\r\n");
+        }
+        else if((m_txrx_data[4] & 0x10) and ((m_txrx_data[4] & 0x20) == 0))
+        {
+          m_timing_set = Extended;
+          printf("Extended timing set\r\n");
+        }
+        
+        printf("-----------------\r\n");
+      }
       return 1;
     }
     

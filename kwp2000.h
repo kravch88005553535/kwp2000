@@ -68,6 +68,12 @@ class KWP2000
     FunctionalAddressing          = 0xC1,
   };
   
+  enum TimingSet
+  {
+    Unknown,
+    Normal,
+    Extended,
+  };
   enum FunctionalAddress
   {
     Immo   = 0xC0,
@@ -99,8 +105,6 @@ class KWP2000
 //  void EcuReset();
 //  void ReadEcuIdentification();
   
-  std::array<uint8_t, 255> m_txrx_data;
-  uint8_t m_package_size;
   static constexpr auto p1min{0};
   static constexpr auto p1max{20};
   
@@ -116,12 +120,20 @@ class KWP2000
   static constexpr uint8_t stc_keybyte1{0x6B};
   static constexpr uint8_t stc_keybyte2{0x8F};
   
-  Usart& mref_usart;
+  Usart&        mref_usart;
   STM32_DMA*    mp_rx_dma_controller;
   STM32_DMA*    mp_tx_dma_controller;
-  
   Pin*          mp_tx_pin; 
   Pin*          mp_rx_pin;
+  
+  std::array<uint8_t, 255> m_txrx_data;
+  uint8_t                  m_package_size;
+  
+  bool m_is_len_info_in_fmt_byte_supported;
+  bool m_is_additional_length_byte_supported;
+  bool m_is_1_byte_header_supported;
+  bool m_is_tgt_src_address_in_header_supported;
+  TimingSet m_timing_set;
   
   Program_timer m_p1_timer;
   Program_timer m_p2_timer;

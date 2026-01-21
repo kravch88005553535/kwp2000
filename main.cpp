@@ -9,7 +9,6 @@
 
 int main (void)
 {
-  
   Rcc rcc(Rcc::System_clock_source_pll_clock, Rcc::Hse_frequency_8Mhz);
 
   Pin led_pin(GPIOC, 13, Pin::mode_out_pullup);
