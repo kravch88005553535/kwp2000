@@ -256,13 +256,6 @@ bool KWP2000::PerformInitialization()
       {
         m_kwp2000_timer.Start();
         mp_tx_pin->SetMode(Pin::mode_out_pullup);
-        m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing)); //fmt
-        m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));           //tgt
-        m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));        //src
-        m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_startCommunication));  //SID
-        SetPackageSize(1);
-        m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1))); //crc
-        printf("TX CRC = 0x%X\r\n", m_txrx_data[m_txrx_data.size() - 1]);
         init_step = OnBus25msHighCondition;
       }
     }
@@ -273,7 +266,7 @@ bool KWP2000::PerformInitialization()
       if(m_kwp2000_timer.Check())
       {
         mp_tx_pin->SetMode(Pin::mode_alternate_function_pushpull);
-        MakeRequest();
+        MakeRequest(SID_Req::SID_startCommunication);
         init_step = TransmissionInitData;
       }
     }
@@ -317,20 +310,10 @@ bool KWP2000::PerformInitialization()
           m_p3_timer.Start();
           init_step = InitFinished;
           m_status = FullyInitialized;
-//          std::fill(m_txrx_data.begin(), m_txrx_data.end(), 0);
-//          m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());
-//          __ASM("nop");
-//          printf("vec size:%d\r\n",m_txrx_data.size());
-//          m_txrx_data.push_back(static_cast<uint8_t>(0x82)); //fmt HeaderFromat::PhysicalAddressing 2 is for size
-//          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));           //tgt
-//          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));        //src
-//          m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_readDataByLocalIdentifier));  //SID
-//          m_txrx_data.push_back(0x01); //PID
-//          SetPackageSize(2);
-//          m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1))); //crc
-//          printf("vec size:%d\r\n",m_txrx_data.size());
+          MakeRequest(SID_Req::SID_Req_readDataByLocalIdentifier);
+
 //          for(volatile uint32_t i{0}; i< 1000000; ++i);
-//          MakeRequest();
+
 //          while (!mp_tx_dma_controller->IsTransferComplete());
 //          mp_rx_dma_controller->DisableChannel();
 //          mp_rx_dma_controller->SetTransferSize(200);
@@ -389,15 +372,47 @@ uint8_t KWP2000::GetPackageSize() const
   return package_size;
 }
 
-void KWP2000::MakeRequest()
+void KWP2000::MakeRequest(const SID_Req a_sid)
 {
+  std::fill(m_txrx_data.begin(), m_txrx_data.end(), 0);
+  m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());+
+  printf("vec size:%d\r\n",m_txrx_data.size());
+	switch(a_sid)
+	{
+		case SID_startCommunication:
+		{
+			m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
+			m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
+			m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
+			m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_startCommunication));
+			SetPackageSize(1);
+			m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
+			printf("TX CRC = 0x%X\r\n", m_txrx_data[m_txrx_data.size() - 1]);
+		}
+		break;
+		
+		case SID_Req_readDataByLocalIdentifier:
+		{
+          m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
+          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
+          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
+          m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_readDataByLocalIdentifier));
+          m_txrx_data.push_back(0x01);
+          SetPackageSize(2);
+          m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
+          printf("vec size:%d\r\n",m_txrx_data.size());
+		}
+		break;
+		
+
+
+		
+		
+		default:
+		break;
+	}
   mp_tx_dma_controller->SetTransferSize(m_txrx_data.size());
   mp_tx_dma_controller->EnableChannel();
-}
-
-void KWP2000::WaitForResponse()
-{
-  //check when dmar flag stops changing or check for no RXNE flag on usart register
 }
 
 bool KWP2000::ParseResponse()

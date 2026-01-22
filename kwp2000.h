@@ -39,6 +39,8 @@ class KWP2000
     InitProcessFailed,
     FullyInitialized,
     Kwp2000Idle,
+	TransmittingData,
+	WaitingForResponse
     ConnectionLost,
   };
   
@@ -51,13 +53,6 @@ class KWP2000
     WaitForInitEnd,
     InitEnd,
     InitFinished,
-  };
-  
-  enum UsartState
-  {
-    TransmittingData,
-    WaitingForResponse, 
-    Idle,
   };
 
   enum HeaderFromat: uint8_t
@@ -93,8 +88,7 @@ class KWP2000
   uint8_t GetPackageSize() const;
   uint8_t CalculateCrc(const uint8_t a_last_index) const; 
   uint8_t CalculateCrc() const;
-  void MakeRequest();
-  void WaitForResponse();
+  void MakeRequest(const SID_Req a_sid);
   bool ParseResponse();
   bool ParseNegativeResponse();
   
