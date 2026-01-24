@@ -38,8 +38,8 @@ enum class SID_Req: uint8_t
   SID_Req_testerPresent                          = 0x3E,
   SID_Req_escCode /* (Not part of Diagnostic Services Specification; KWP 2000 only)*/ = 0x80,
 //------------------------------ manufacturer specific
-  SID_startCommunication                     = 0x81,
-  SID_stopCommunication                      = 0x82,
+  SID_Req_startCommunication                     = 0x81,
+  SID_Req_stopCommunication                      = 0x82,
 };
 
 enum class SID_Rsp: uint8_t

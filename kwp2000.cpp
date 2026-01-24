@@ -38,14 +38,14 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
   
   std::fill(std::begin(m_txrx_data), std::end(m_txrx_data), 0xAA);
   
-  printf("Initializing KWP2000.\r\n");
+  //printf("Initializing KWP2000.\r\n");
 
-  printf("Array addres :0x%X\r\n", &m_txrx_data[0]);
+  //printf("Array addres :0x%X\r\n", &m_txrx_data[0]);
   
   
   if(a_dma_usage)
   {
-    printf("Initializing DMA TX/RX channels.\r\n");
+    //printf("Initializing DMA TX/RX channels.\r\n");
 
     switch(mref_usart.GetPeripheralAddress())
     {
@@ -186,15 +186,15 @@ KWP2000::KWP2000(Usart& aref_usart, const bool a_dma_usage)
       
       case UART5_BASE:
       {
-        printf("KWP2000: wrong UART pointer. DMA initialization failed\r\n");
-        printf("Switching to manual TX/RX management\r\n");
+        //printf("KWP2000: wrong UART pointer. DMA initialization failed\r\n");
+        //printf("Switching to manual TX/RX management\r\n");
         m_status = Status::DmaInitializationFailed;
       }
       break;
       
       default:
       {
-        printf("KWP2000: wrong UART pointer. KWP2000 initialization failed\r\n");
+        //printf("KWP2000: wrong UART pointer. KWP2000 initialization failed\r\n");
         m_status = Status::PeripheralInitializationFailed;
       }
       break;
@@ -214,13 +214,43 @@ void KWP2000::Execute()
     case PeripheralInitialized:
     case DmaInitializationFailed:
     {
+      m_status = OnKwpInit;
+    }
+    case OnKwpInit:
+    {
       PerformInitialization();
     }
     break;
     
     case FullyInitialized:
     {
+      if(m_p3_timer.Check())
+      {
+        MakeRequest(SID_Req::SID_Req_readDataByLocalIdentifier);
+        for(volatile uint32_t i{0}; i<100000; ++i);
+        std::fill(m_txrx_data.begin(), m_txrx_data.end(), 0);
+        m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());
+        mp_rx_dma_controller->DisableChannel();
+        mp_rx_dma_controller->SetTransferSize(200);
+        mp_rx_dma_controller->EnableChannel();
+        for(volatile uint32_t i{0}; i<10000000; ++i);
+        ParseResponse();
+      }
+      
+//        for(volatile uint32_t i{0}; i< 1000000; ++i);
+//        while (!mp_tx_dma_controller->IsTransferComplete());
+//        mp_rx_dma_controller->DisableChannel();
+//        mp_rx_dma_controller->SetTransferSize(200);
+//        mp_rx_dma_controller->EnableChannel();
+//        for(volatile uint32_t i{0}; i< 1000000; ++i);
+//        __ASM("nop");
       //check session timers and execute logic.
+    }
+    break;
+    
+    case TransmittingData:
+    {
+      
     }
     break;
     
@@ -266,7 +296,7 @@ bool KWP2000::PerformInitialization()
       if(m_kwp2000_timer.Check())
       {
         mp_tx_pin->SetMode(Pin::mode_alternate_function_pushpull);
-        MakeRequest(SID_Req::SID_startCommunication);
+        MakeRequest(SID_Req::SID_Req_startCommunication);
         init_step = TransmissionInitData;
       }
     }
@@ -276,7 +306,7 @@ bool KWP2000::PerformInitialization()
     {
       if(mp_tx_dma_controller->IsTransferComplete())
       {
-        m_p4_timer.SetInterval_ms(p2min);
+        m_p4_timer.SetInterval_ms(10);
         m_p4_timer.Start();
         init_step = WaitForInitEnd;
       }
@@ -307,19 +337,8 @@ bool KWP2000::PerformInitialization()
         {
           //configure peripherals etc.
           //start request/respone timers
-          m_p3_timer.Start();
           init_step = InitFinished;
-          m_status = FullyInitialized;
-          MakeRequest(SID_Req::SID_Req_readDataByLocalIdentifier);
-
-//          for(volatile uint32_t i{0}; i< 1000000; ++i);
-
-//          while (!mp_tx_dma_controller->IsTransferComplete());
-//          mp_rx_dma_controller->DisableChannel();
-//          mp_rx_dma_controller->SetTransferSize(200);
-//          mp_rx_dma_controller->EnableChannel();
-//          for(volatile uint32_t i{0}; i< 1000000; ++i);
-//          __ASM("nop");
+          m_status  = FullyInitialized;
         }
         else
         {
@@ -375,24 +394,22 @@ uint8_t KWP2000::GetPackageSize() const
 void KWP2000::MakeRequest(const SID_Req a_sid)
 {
   std::fill(m_txrx_data.begin(), m_txrx_data.end(), 0);
-  m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());+
-  printf("vec size:%d\r\n",m_txrx_data.size());
-	switch(a_sid)
-	{
-		case SID_startCommunication:
-		{
-			m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
-			m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
-			m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
-			m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_startCommunication));
-			SetPackageSize(1);
-			m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
-			printf("TX CRC = 0x%X\r\n", m_txrx_data[m_txrx_data.size() - 1]);
-		}
-		break;
-		
-		case SID_Req_readDataByLocalIdentifier:
-		{
+  m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());
+  switch(a_sid)
+  {
+    case SID_Req::SID_Req_startCommunication:
+    {
+      m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
+      m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_startCommunication));
+      SetPackageSize(1);
+      m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
+    }
+    break;
+    
+    case SID_Req::SID_Req_readDataByLocalIdentifier:
+    {
           m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
           m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
           m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
@@ -400,37 +417,44 @@ void KWP2000::MakeRequest(const SID_Req a_sid)
           m_txrx_data.push_back(0x01);
           SetPackageSize(2);
           m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
-          printf("vec size:%d\r\n",m_txrx_data.size());
-		}
-		break;
-		
-
-
-		
-		
-		default:
-		break;
-	}
+    }
+    break;
+    
+    default:
+    break;
+  }
+  printf("Request: ");
+  for(auto it{m_txrx_data.begin()}; it != m_txrx_data.end(); ++it)
+  {
+    printf("%X ", static_cast<uint8_t>(*it));
+  }
+  printf("\r\n");
   mp_tx_dma_controller->SetTransferSize(m_txrx_data.size());
   mp_tx_dma_controller->EnableChannel();
+  if(m_status != OnKwpInit)
+  {
+    m_status = TransmittingData;
+  }
 }
 
 bool KWP2000::ParseResponse()
 {
+  //if(m_is)
+  m_p3_timer.SetInterval_ms(50);
+  m_p3_timer.Start();
   constexpr uint8_t max_package_size{255};
   constexpr uint8_t no_length_byte_package_size{63};
-  const uint8_t package_size {GetPackageSize()};
+  const uint8_t package_size{GetPackageSize()};
   
   if(package_size == 0)
   {
     printf("RX package size = 0\r\n");
     return 0;
   }
-  printf("RX package size = %X\r\n", package_size);
   
-  uint8_t last_array_index{0};
+  uint16_t last_array_index{0};
   uint8_t sid_index{0};
-  if(package_size < no_length_byte_package_size)
+  if(m_txrx_data[0] != 0x80)
   {
     constexpr uint8_t header_size{3};
     last_array_index = package_size + header_size - 1;
@@ -442,14 +466,17 @@ bool KWP2000::ParseResponse()
     last_array_index = package_size + header_size - 1;
     sid_index = 4;
   }
-  printf("last array index = %d\r\n", last_array_index);
+  printf("Response: ");
+  for(uint16_t i{0}; i <= last_array_index; ++i)
+  {
+    printf("%X ", static_cast<uint8_t>(m_txrx_data[i])); //DANGEROUS SHIT!
+  }
+  printf("\r\n");
   
   const uint8_t crc{CalculateCrc(last_array_index)};
   printf("CRC = %X\r\n", crc);
   
   const auto crc_index{last_array_index + 1};
-  
-  printf("CRC index = %d\r\n", crc_index);
   if(crc != m_txrx_data[crc_index])
   {
     return 0;

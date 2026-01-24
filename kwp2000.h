@@ -36,11 +36,12 @@ class KWP2000
     DmaInitializationFailed,
     PeripheralInitializationFailed,
     PeripheralInitialized,
+    OnKwpInit,
     InitProcessFailed,
     FullyInitialized,
     Kwp2000Idle,
-	TransmittingData,
-	WaitingForResponse
+    TransmittingData,
+    WaitingForResponse,
     ConnectionLost,
   };
   
