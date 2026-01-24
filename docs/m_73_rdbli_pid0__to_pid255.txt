@@ -1,0 +1,787 @@
+Request: 81 10 F1 81 3 
+Response: 83 F1 10 C1 6B 8F 
+CRC = 3F
+-----------------
+length information in format byte supported = 1
+additional length byte supported = 1
+1 byte header supported = 0
+target/source address in header supported = 1
+timing parameter 0 = 0
+timing parameter 1 = 1
+Normal timing set
+-----------------
+Request: 82 10 F1 21 0 A4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1 A5 
+Response: 80 F1 10 4A 61 1 7 B B B 73 0 0 0 0 0 0 0 10 AA 85 40 0 0 BA 85 5C 58 FC 33 7D 80 0 F 48 0 0 D8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 F1 66 0 0 0 80 0 0 0 80 0 0 0 13 80 0 E8 0 7C 0 0 0 FE 80 
+CRC = 64
+Request: 82 10 F1 21 2 A6 
+Response: A6 F1 10 61 2 4 0 69 A6 0 0 27 67 3 FF 74 17 FF FF FA C8 0 0 0 0 0 0 0 0 0 0 41 7 0 0 0 0 0 0 0 0 
+CRC = 40
+Request: 82 10 F1 21 3 A7 
+Response: 96 F1 10 61 3 1 E5 0 0 1 0 80 0 5D 0 0 5D 1D 4C 2 0 0 1D 4C 0 
+CRC = F0
+Request: 82 10 F1 21 4 A8 
+Response: 80 F1 10 46 61 4 A6 69 0 4 17 74 FF 3 67 27 0 0 C8 FA FF FF 1 1 1 5 0 0 0 0 0 0 0 0 0 0 20 3 0 0 0 0 0 0 0 0 0 0 40 9 0 0 C0 7 0 0 0 0 0 0 0 0 0 0 1E 0 0 0 0 0 0 0 0 0 
+CRC = 73
+Request: 82 10 F1 21 5 A9 
+Response: 80 F1 10 52 61 5 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 
+CRC = E9
+Request: 82 10 F1 21 6 AA 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 7 AB 
+Response: 80 F1 10 63 61 7 7F 8 0 0 A EC 0 EC A EC A EC 0 0 D2 3 9A FD 20 1C 20 1C 20 1C 80 3E 0 20 0 0 0 0 0 0 0 0 0 0 A 2 0 0 0 0 85 0 95 E 0 0 0 0 5D 0 5C 0 0 0 0 FC 0 20 FF FF 0 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 F1 66 7 0 0 0 0 0 8 
+CRC = F
+Request: 82 10 F1 21 8 AC 
+Response: 90 F1 10 61 8 0 0 51 0 F4 67 90 3E 64 45 9A 88 0 8 
+CRC = 47
+Request: 82 10 F1 21 9 AD 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 A AE 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B AF 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C B0 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D B1 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E B2 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F B3 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 10 B4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 11 B5 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 12 B6 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 13 B7 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 14 B8 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 15 B9 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 16 BA 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 17 BB 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 18 BC 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 19 BD 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1A BE 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1B BF 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1C C0 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1D C1 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1E C2 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1F C3 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 20 C4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 21 C5 
+Response: 80 F1 10 82 61 21 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 
+CRC = 85
+Request: 82 10 F1 21 22 C6 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 23 C7 
+Response: 80 F1 10 42 61 23 9F 9A 6D 6F 98 0 EB 6D 28 9E 25 B1 F8 91 C1 6C 8D BE 71 49 92 8A E7 67 42 9E ED 74 1A AD 6F 44 9A 2A 6D 60 FA 99 D 21 9E 9C 44 67 78 1B 21 2E 9A B3 44 5D 3E 93 44 6D DE F0 50 23 BA 99 25 43 
+CRC = 4D
+Request: 82 10 F1 21 24 C8 
+Response: 80 F1 10 82 61 24 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+CRC = 88
+Request: 82 10 F1 21 25 C9 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 26 CA 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 27 CB 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 28 CC 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 29 CD 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 2A CE 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 2B CF 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 2C D0 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 2D D1 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 2E D2 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 2F D3 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 30 D4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 31 D5 
+Response: 92 F1 10 61 31 4 6 30 7 C0 8 40 B 60 E C0 12 10 18 40 1F 
+CRC = 40
+Request: 82 10 F1 21 32 D6 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 33 D7 
+Response: 92 F1 10 61 33 20 3 A0 5 20 8 A0 A 20 D A0 F 20 12 A0 14 
+CRC = 83
+Request: 82 10 F1 21 34 D8 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 35 D9 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 36 DA 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 37 DB 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 38 DC 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 39 DD 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 3A DE 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 3B DF 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 3C E0 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 3D E1 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 3E E2 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 3F E3 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 40 E4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 41 E5 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 42 E6 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 43 E7 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 44 E8 
+Response: 86 F1 10 61 44 1 1 1 1 
+CRC = 30
+Request: 82 10 F1 21 45 E9 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 46 EA 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 47 EB 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 48 EC 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 49 ED 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 4A EE 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 4B EF 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 4C F0 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 4D F1 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 4E F2 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 4F F3 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 50 F4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 51 F5 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 52 F6 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 53 F7 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 54 F8 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 55 F9 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 56 FA 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 57 FB 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 58 FC 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 59 FD 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 5A FE 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 5B FF 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 5C 0 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 5D 1 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 5E 2 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 5F 3 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 60 4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 61 5 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 62 6 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 63 7 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 64 8 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 65 9 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 66 A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 67 B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 68 C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 69 D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 6A E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 6B F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 6C 10 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 6D 11 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 6E 12 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 6F 13 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 70 14 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 71 15 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 72 16 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 73 17 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 74 18 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 75 19 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 76 1A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 77 1B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 78 1C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 79 1D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 7A 1E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 7B 1F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 7C 20 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 7D 21 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 7E 22 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 7F 23 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 80 24 
+Response: 80 F1 10 61 61 80 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 32 31 31 31 34 2D 31 34 31 31 30 32 30 2D 31 32 30 32 36 31 32 30 34 39 39 39 30 37 39 39 20 20 20 20 20 20 32 31 31 30 31 20 31 2C 36 4C 20 38 56 20 20 FF FF FF FF FF FF FF 31 35 2D 31 31 2D 32 30 30 37 49 33 31 37 44 41 30 32 20 20 
+CRC = 35
+Request: 82 10 F1 21 81 25 
+Response: 9D F1 10 61 81 4 90 6F 62 4 91 6F 61 3 92 6A 3 94 6A 3 97 6F 3 98 67 3 99 6A 3 9A 6A FF 
+CRC = 61
+Request: 82 10 F1 21 82 26 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 83 27 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 84 28 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 85 29 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 86 2A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 87 2B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 88 2C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 89 2D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 8A 2E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 8B 2F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 8C 30 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 8D 31 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 8E 32 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 8F 33 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 90 34 
+Response: 93 F1 10 61 90 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 
+CRC = 74
+Request: 82 10 F1 21 91 35 
+Response: 92 F1 10 61 91 32 31 31 31 34 2D 31 34 31 31 30 32 30 2D 31 32 
+CRC = 94
+Request: 82 10 F1 21 92 36 
+Response: 8C F1 10 61 92 30 32 36 31 32 30 34 39 39 39 
+CRC = 8A
+Request: 82 10 F1 21 93 37 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 94 38 
+Response: 8C F1 10 61 94 30 37 39 39 20 20 20 20 20 20 
+CRC = 1B
+Request: 82 10 F1 21 95 39 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 96 3A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 97 3B 
+Response: 91 F1 10 61 97 32 31 31 30 31 20 31 2C 36 4C 20 38 56 20 20 
+CRC = 6C
+Request: 82 10 F1 21 98 3C 
+Response: 89 F1 10 61 98 FF FF FF FF FF FF FF 
+CRC = 7C
+Request: 82 10 F1 21 99 3D 
+Response: 8C F1 10 61 99 31 35 2D 31 31 2D 32 30 30 37 
+CRC = 72
+Request: 82 10 F1 21 9A 3E 
+Response: 8C F1 10 61 9A 49 33 31 37 44 41 30 32 20 20 
+CRC = 93
+Request: 82 10 F1 21 9B 3F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 9C 40 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 9D 41 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 9E 42 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 9F 43 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 A0 44 
+Response: 86 F1 10 61 A0 0 0 13 0 
+CRC = 9B
+Request: 82 10 F1 21 A1 45 
+Response: 89 F1 10 61 A1 FF FF FF FF FF FF FF 
+CRC = 85
+Request: 82 10 F1 21 A2 46 
+Response: 89 F1 10 61 A2 FF FF FF FF FF FF FF 
+CRC = 86
+Request: 82 10 F1 21 A3 47 
+Response: 8C F1 10 61 A3 FF FF FF FF FF FF FF FF FF FF 
+CRC = 87
+Request: 82 10 F1 21 A4 48 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 A5 49 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 A6 4A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 A7 4B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 A8 4C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 A9 4D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 AA 4E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 AB 4F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 AC 50 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 AD 51 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 AE 52 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 AF 53 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B0 54 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B1 55 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B2 56 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B3 57 
+Response: 91 F1 10 61 B3 34 31 35 2E 33 37 36 33 20 30 30 31 20 20 20 
+CRC = 52
+Request: 82 10 F1 21 B4 58 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B5 59 
+Response: 8C F1 10 61 B5 49 33 31 37 44 41 30 32 20 20 
+CRC = AE
+Request: 82 10 F1 21 B6 5A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B7 5B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B8 5C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 B9 5D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 BA 5E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 BB 5F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 BC 60 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 BD 61 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 BE 62 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 BF 63 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C0 64 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C1 65 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C2 66 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C3 67 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C4 68 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C5 69 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C6 6A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C7 6B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C8 6C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 C9 6D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 CA 6E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 CB 6F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 CC 70 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 CD 71 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 CE 72 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 CF 73 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D0 74 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D1 75 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D2 76 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D3 77 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D4 78 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D5 79 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D6 7A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D7 7B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D8 7C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 D9 7D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 DA 7E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 DB 7F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 DC 80 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 DD 81 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 DE 82 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 DF 83 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E0 84 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E1 85 
+Response: 84 F1 10 61 E1 F1 66 
+CRC = 1E
+Request: 82 10 F1 21 E2 86 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E3 87 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E4 88 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E5 89 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E6 8A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E7 8B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E8 8C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 E9 8D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 EA 8E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 EB 8F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 EC 90 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 ED 91 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 EE 92 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 EF 93 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F0 94 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F1 95 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F2 96 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F3 97 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F4 98 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F5 99 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F6 9A 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F7 9B 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F8 9C 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 F9 9D 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 FA 9E 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 FB 9F 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 FC A0 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 FD A1 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 FE A2 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 FF A3 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 0 A4 
+Response: 83 F1 10 7F 21 12 
+CRC = 36
+Request: 82 10 F1 21 1 A5 
+Response: 80 F1 10 4A 61 1 7 B B B 73 0 0 0 0 0 0 0 10 AA 85 40 0 0 BA 85 5C 58 FC 33 7D 80 0 F 48 0 0 D8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 F1 66 0 0 0 80 0 0 0 80 0 0 0 13 80 0 E8 0 7C 0 0 0 FE 80 
+CRC = 66
+

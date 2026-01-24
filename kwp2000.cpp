@@ -222,35 +222,68 @@ void KWP2000::Execute()
     }
     break;
     
+    case InitProcessFailed:
+    {
+      static uint8_t num_of_failed_init_attepmts{0};
+      ++num_of_failed_init_attepmts;
+      m_status = OnKwpInit;
+    }
+    break;
+    
     case FullyInitialized:
     {
       if(m_p3_timer.Check())
       {
         MakeRequest(SID_Req::SID_Req_readDataByLocalIdentifier);
-        for(volatile uint32_t i{0}; i<100000; ++i);
-        std::fill(m_txrx_data.begin(), m_txrx_data.end(), 0);
-        m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());
-        mp_rx_dma_controller->DisableChannel();
-        mp_rx_dma_controller->SetTransferSize(200);
-        mp_rx_dma_controller->EnableChannel();
-        for(volatile uint32_t i{0}; i<10000000; ++i);
-        ParseResponse();
       }
-      
-//        for(volatile uint32_t i{0}; i< 1000000; ++i);
-//        while (!mp_tx_dma_controller->IsTransferComplete());
-//        mp_rx_dma_controller->DisableChannel();
-//        mp_rx_dma_controller->SetTransferSize(200);
-//        mp_rx_dma_controller->EnableChannel();
-//        for(volatile uint32_t i{0}; i< 1000000; ++i);
-//        __ASM("nop");
-      //check session timers and execute logic.
     }
     break;
     
     case TransmittingData:
     {
+      if(mp_tx_dma_controller->IsTransferComplete())
+      {
+        mref_usart.ClearTransferCompleteFlag();        
+        m_p2_timer.SetInterval_ms(110);
+        m_p2_timer.Start();
+        
+        m_kwp2000_timer.SetInterval_ms(10);
+        m_kwp2000_timer.Start();
+        
+        m_status = WaitingForResponse;
+      }
+    }
+    break;
+    
+    case WaitingForResponse:
+    {
+      if(m_kwp2000_timer.Check())
+      {
+        std::fill(m_txrx_data.begin(), m_txrx_data.end(), 0);
+        m_txrx_data.erase(m_txrx_data.begin(), m_txrx_data.end());
+        mp_rx_dma_controller->DisableChannel();
+        mp_rx_dma_controller->SetTransferSize(240);
+        mp_rx_dma_controller->EnableChannel();
+      }
       
+      if(m_p2_timer.Check())
+      {
+        __ASM("nop");
+          if(!ParseResponse())
+          {
+            __ASM("nop");
+            //increase error counter
+            //if error counter is high set status to init
+            //else
+            m_status = FullyInitialized;
+          }
+          else
+          {
+            __ASM("nop");
+//          set error counter to 0
+            m_status = FullyInitialized;
+          }
+      }
     }
     break;
     
@@ -306,7 +339,7 @@ bool KWP2000::PerformInitialization()
     {
       if(mp_tx_dma_controller->IsTransferComplete())
       {
-        m_p4_timer.SetInterval_ms(10);
+        m_p4_timer.SetInterval_ms(15);
         m_p4_timer.Start();
         init_step = WaitForInitEnd;
       }
@@ -335,8 +368,6 @@ bool KWP2000::PerformInitialization()
       {
         if(ParseResponse())
         {
-          //configure peripherals etc.
-          //start request/respone timers
           init_step = InitFinished;
           m_status  = FullyInitialized;
         }
@@ -410,11 +441,12 @@ void KWP2000::MakeRequest(const SID_Req a_sid)
     
     case SID_Req::SID_Req_readDataByLocalIdentifier:
     {
+          static uint8_t pid{0x01};
           m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
           m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
           m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
           m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_readDataByLocalIdentifier));
-          m_txrx_data.push_back(0x01);
+          m_txrx_data.push_back(pid++);
           SetPackageSize(2);
           m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
     }
@@ -423,7 +455,7 @@ void KWP2000::MakeRequest(const SID_Req a_sid)
     default:
     break;
   }
-  printf("Request: ");
+  printf("\r\nRequest: ");
   for(auto it{m_txrx_data.begin()}; it != m_txrx_data.end(); ++it)
   {
     printf("%X ", static_cast<uint8_t>(*it));
@@ -439,8 +471,7 @@ void KWP2000::MakeRequest(const SID_Req a_sid)
 
 bool KWP2000::ParseResponse()
 {
-  //if(m_is)
-  m_p3_timer.SetInterval_ms(50);
+  m_p3_timer.SetInterval_ms(p3min);
   m_p3_timer.Start();
   constexpr uint8_t max_package_size{255};
   constexpr uint8_t no_length_byte_package_size{63};
@@ -449,6 +480,7 @@ bool KWP2000::ParseResponse()
   if(package_size == 0)
   {
     printf("RX package size = 0\r\n");
+    printf("%X\r\n", m_txrx_data[0]);
     return 0;
   }
   
@@ -474,12 +506,16 @@ bool KWP2000::ParseResponse()
   printf("\r\n");
   
   const uint8_t crc{CalculateCrc(last_array_index)};
-  printf("CRC = %X\r\n", crc);
   
   const auto crc_index{last_array_index + 1};
   if(crc != m_txrx_data[crc_index])
   {
-    return 0;
+    printf("CRC = %X (ERROR)\r\n", crc);
+    return 1;
+  }
+  else
+  {
+    printf("CRC = %X (OK)\r\n", crc);
   }
   
   const SID_Rsp sid = static_cast <SID_Rsp>(m_txrx_data[sid_index]);
