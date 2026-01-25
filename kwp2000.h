@@ -70,6 +70,13 @@ class KWP2000
     Normal,
     Extended,
   };
+  
+  enum Baudrate
+  {
+    Br_Normal   = 10200,
+    Br_High     = 38400,
+    Br_Enhanced = 57600,
+  };
   enum FunctionalAddress
   {
     Immo   = 0xC0,
@@ -84,14 +91,14 @@ class KWP2000
   void Execute();
   
   private:
-  bool PerformInitialization();
-  void SetPackageSize(const uint8_t a_size);
+  bool    PerformInitialization();
+  void    SetPackageSize(const uint8_t a_size);
   uint8_t GetPackageSize() const;
   uint8_t CalculateCrc(const uint8_t a_last_index) const; 
   uint8_t CalculateCrc() const;
-  void MakeRequest(const SID_Req a_sid);
-  bool ParseResponse();
-  bool ParseNegativeResponse();
+  void    MakeRequest(const SID_Req a_sid);
+  bool    ParseResponse();
+  bool    ParseNegativeResponse(const uint16_t a_nrc_index);
   
 //  void StartDiagnosicSession();
 //  void StopDiagnosticSession();
@@ -122,7 +129,7 @@ class KWP2000
   Pin*          mp_rx_pin;
   
   std::vector<uint8_t> m_txrx_data;
-  uint8_t                  m_package_size;
+  uint8_t              m_package_size;
   
   bool m_is_len_info_in_fmt_byte_supported;
   bool m_is_additional_length_byte_supported;

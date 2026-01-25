@@ -2,6 +2,7 @@
 
 #include "kwp2000.h"
 #include "pid.h"
+#include "response_codes.h"
 
 //Header::Header(const uint8_t a_format, const uint8_t a_target, const uint8_t a_source, const uint8_t a_length)
 //  : m_format{a_format}
@@ -216,12 +217,12 @@ void KWP2000::Execute()
     {
       m_status = OnKwpInit;
     }
+//    break;
     case OnKwpInit:
     {
       PerformInitialization();
     }
     break;
-    
     case InitProcessFailed:
     {
       static uint8_t num_of_failed_init_attepmts{0};
@@ -234,7 +235,16 @@ void KWP2000::Execute()
     {
       if(m_p3_timer.Check())
       {
-        MakeRequest(SID_Req::SID_Req_readDataByLocalIdentifier);
+        static bool package_type{1};
+        package_type = !package_type;
+        if(package_type)
+        {
+          MakeRequest(SID_Req::SID_Req_readDiagnosticTroubleCodesByStatus);
+        }
+        else
+        {
+          MakeRequest(SID_Req::SID_Req_readDataByLocalIdentifier);
+        }
       }
     }
     break;
@@ -439,16 +449,42 @@ void KWP2000::MakeRequest(const SID_Req a_sid)
     }
     break;
     
+    case SID_Req::SID_Req_readDiagnosticTroubleCodesByStatus:
+    {
+      m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
+      m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_readDiagnosticTroubleCodesByStatus));
+      m_txrx_data.push_back(0);
+      m_txrx_data.push_back(0);
+      m_txrx_data.push_back(0);
+      SetPackageSize(4);
+      m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
+    }
+    break;
+    
     case SID_Req::SID_Req_readDataByLocalIdentifier:
     {
-          static uint8_t pid{0x01};
-          m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
-          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
-          m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
-          m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_readDataByLocalIdentifier));
-          m_txrx_data.push_back(pid++);
-          SetPackageSize(2);
-          m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
+      static uint8_t pid{0x01};
+      m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
+      m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_readDataByLocalIdentifier));
+      m_txrx_data.push_back(pid);
+      SetPackageSize(2);
+      m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
+    }
+    break;
+    
+    case SID_Req::SID_Req_testerPresent:
+    {
+      m_txrx_data.push_back(static_cast<uint8_t>(HeaderFromat::PhysicalAddressing));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Ecu));
+      m_txrx_data.push_back(static_cast<uint8_t>(FunctionalAddress::Tester));
+      m_txrx_data.push_back(static_cast<uint8_t>(SID_Req::SID_Req_testerPresent));
+      m_txrx_data.push_back(static_cast<uint8_t>(0x01));
+      SetPackageSize(2);
+      m_txrx_data.push_back(static_cast<uint8_t>(CalculateCrc(m_txrx_data.size() - 1)));
     }
     break;
     
@@ -568,10 +604,26 @@ bool KWP2000::ParseResponse()
       return 1;
     }
     
+    case SID_Rsp::SID_Rsp_testerPresent:
+    {
+      //reload timers for tester present or do smth else here
+      return 1;
+    }
+    break;
+    
+    case SID_Rsp::SID_Rsp_stopCommunication:
+    {
+      //end communication between tester & ecu
+      return 1;
+    }
+    break;
+    
     case SID_Rsp::SID_Rsp_negativeResponse:
     {
-      return ParseNegativeResponse(/**/);
+      return ParseNegativeResponse(sid_index);
     }
+    break; //not necessary here
+    
     deafult:
       return 0;
     break;
@@ -579,8 +631,147 @@ bool KWP2000::ParseResponse()
   return 0;
 }
 
-bool KWP2000::ParseNegativeResponse()
+bool KWP2000::ParseNegativeResponse(const uint16_t a_nrc_index)
 {
+  const NRC response_code{static_cast<uint8_t>(m_txrx_data[a_nrc_index])};
+  
+  switch(response_code)
+  {
+    case NRC::NRC_generalReject: 
+    {
+    }
+    break;
+    
+    case NRC::NRC_serviceNotSupported:
+    {
+    }
+    break;
+
+    case NRC::NRC_subFunctionNotSupported_invalidFormat:
+    {
+    }
+    break;
+    
+    case NRC::NRC_busy_RepeatRequest:
+    {
+    }
+    break;
+    
+    case NRC::NRC_conditionsNotCorrect_or_requestSequenceError:
+    {
+    }
+    break;
+    
+    case NRC::NRC_routineNotComplete:
+    {
+    }
+    break;
+    
+    case NRC::NRC_requestOutOfRange:
+    {
+    }
+    break;
+    
+    case NRC::NRC_securityAccessDenied:
+    {
+    }
+    break;
+    
+    case NRC::NRC_invalidKey:
+    {
+    }
+    break;
+    
+    case NRC::NRC_exceedNumberOfAttempts:
+    {
+    }
+    break;
+    
+    case NRC::NRC_requiredTimeDelayNotExpired:
+    {
+    }
+    break;
+    
+    case NRC::NRC_downloadNotAccepted:
+    {
+    }
+    break;
+    
+    case NRC::NRC_improperDownloadType:
+    {
+    }
+    break;
+    
+    case NRC::NRC_cannotDownloadToSpecifiedAddress:
+    {
+    }
+    break;
+    
+    case NRC::NRC_cannotDownloadNumberOfBytesRequested:
+    {
+    }
+    break;
+    
+    case NRC::NRC_uploadNotAccepted:
+    {
+    }
+    break;
+    
+    case NRC::NRC_improperUploadType:
+    {
+    }
+    break;
+    
+    case NRC::NRC_cannotUploadFromSpecifiedAddress:
+    {
+    }
+    break;
+    
+    case NRC::NRC_cannotUploadNumberOfBytesRequested:
+    {
+    }
+    break;
+    
+    case NRC::NRC_transferSuspended:
+    {
+    }
+    break;
+    
+    case NRC::NRC_transferAborted:
+    {
+    }
+    break;
+    
+    case NRC::NRC_illegalAddressInBlockTransfer:
+    {
+    }
+    break;
+    
+    case NRC::NRC_illegalByteCountInBlockTransfer:
+    {
+    }
+    break;
+    
+    case NRC::NRC_illegalBlockTransferType:
+    {
+    }
+    break;
+    
+    case NRC::NRC_blockTransferDataChecksumError:
+    {
+    }
+    break;
+    
+    case NRC::NRC_requestCorrectlyReceived_ResponsePending:
+    {
+    }
+    break;
+    
+    case NRC::NRC_incorrectByteCountDuringBlockTransfer:
+    
+    default:
+    break;
+  }
   return 1;
 }
 

@@ -1,7 +1,7 @@
 #ifndef __RESPONSE_CODES_H__
 #define __RESPONSE_CODES_H__
 
-enum class NegResponseCodes
+enum class NRC // NRC stands for negative response code
 {
   NRC_generalReject                                = 0x10, 
   NRC_serviceNotSupported                          = 0x11,
